@@ -9,6 +9,7 @@ const socketIO = require("socket.io")(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
+    pingTimeout: 60000,
   },
 });
 
@@ -105,8 +106,31 @@ socketIO.on("connection", (socket) => {
     socket.broadcast.emit("call-ended", socket.id);
   });
 
-  socket.on("disconnect", () => {
+  socket.on("connect_error", (err) => {
+    // the reason of the error, for example "xhr poll error"
+    console.log(err.message);
+
+    // some additional description, for example the status code of the initial HTTP response
+    console.log(err.description);
+
+    // some additional context, for example the XMLHttpRequest object
+    console.log(err.context);
+  });
+
+  socket.on("disconnect", (reason, details) => {
     console.log("🔥: A user disconnected");
+
+    // the reason of the disconnection, for example "transport error"
+    console.log(reason);
+
+    // the low-level reason of the disconnection, for example "xhr post error"
+    console.log(details.message);
+
+    // some additional description, for example the status code of the HTTP response
+    console.log(details.description);
+
+    // some additional context, for example the XMLHttpRequest object
+    console.log(details.context);
 
     const rooms = Object.keys(users);
     rooms.forEach((roomId) => {
