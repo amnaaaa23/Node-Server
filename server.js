@@ -2,16 +2,20 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const http = require("http").Server(app);
+const server = require("http").createServer(app);
 const PORT = process.env.PORT;
 const session = require("express-session");
-const socketIO = require("socket.io")(http, {
+const socketIO = require("socket.io")(server, {
   cors: {
-    origin:
-      "https://employee-health-fe-git-dt-chat-amnas-projects-8c1cbb05.vercel.app",
+    origin: "*",
     methods: ["GET", "POST"],
-    credentials: true,
   },
+});
+
+app.use(cors());
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
 });
 
 let users = [];
@@ -119,17 +123,7 @@ socketIO.on("connection", (socket) => {
     socket.disconnect();
   });
 });
-app.use(
-  cors({
-    origin:
-      "https://employee-health-fe-git-dt-chat-amnas-projects-8c1cbb05.vercel.app/",
-  })
-);
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
-
-http.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
