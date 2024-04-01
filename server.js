@@ -117,8 +117,9 @@ socketIO.on("connection", (socket) => {
   });
 });
 app.use(cors());
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello" });
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
 });
 
 http.listen(PORT, () => {
