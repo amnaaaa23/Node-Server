@@ -7,7 +7,8 @@ const PORT = process.env.PORT;
 const session = require("express-session");
 const socketIO = require("socket.io")(http, {
   cors: {
-    origin: "*",
+    origin:
+      "https://employee-health-fe-git-dt-chat-amnas-projects-8c1cbb05.vercel.app/",
   },
 });
 
@@ -116,7 +117,12 @@ socketIO.on("connection", (socket) => {
     socket.disconnect();
   });
 });
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      "https://employee-health-fe-git-dt-chat-amnas-projects-8c1cbb05.vercel.app/",
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
