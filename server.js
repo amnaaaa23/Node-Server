@@ -13,6 +13,30 @@ const socketIO = require("socket.io")(server, {
   },
 });
 
+const OpenAIApi = require('openai');
+const openai = new OpenAIApi({
+    apiKey: process.env.GPT_API_KEY
+});
+
+app.post('/chatbot', async (req, res) => {
+    try {    
+        const response = await openai.completions.create({
+        model: "gpt-3.5-turbo",
+        prompt: `How You can help me ?`,
+        temperature: 1.00,
+        max_tokens: 150,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+        });
+    
+        console.log(response.data.choices);
+
+    } catch (e) {
+        console.log({ e });
+    }
+});
+
 app.use(cors());
 
 app.get("/", (req, res) => {
