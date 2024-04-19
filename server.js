@@ -12,35 +12,28 @@ const socketIO = require("socket.io")(server, {
     pingTimeout: 60000,
   },
 });
-
-const OpenAIApi = require('openai');
-const openai = new OpenAIApi({
-    apiKey: process.env.GPT_API_KEY
-});
-
-app.post('/chatbot', async (req, res) => {
-    try {    
-        const response = await openai.completions.create({
-        model: "gpt-3.5-turbo",
-        prompt: `How You can help me ?`,
-        temperature: 1.00,
-        max_tokens: 150,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-        });
-    
-        console.log(response.data.choices);
-
-    } catch (e) {
-        console.log({ e });
-    }
-});
+const { callChatbotAPI } = require("./chatbot");
 
 app.use(cors());
+app.use(express.json()); 
 
 app.get("/", (req, res) => {
   res.send("Hello World");
+});
+
+app.post("/chatbot", async (req, res) => {
+  if (!req.body || !req.body.chat) {
+    return res.status(400).json({ error: "Missing inputs data" });
+  }
+
+  const chat = req.body.chat;
+
+  try {
+    const responseData = await callChatbotAPI(chat);
+    res.json(responseData[0]['generated_text']);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 let users = [];
