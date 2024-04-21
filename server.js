@@ -12,11 +12,28 @@ const socketIO = require("socket.io")(server, {
     pingTimeout: 60000,
   },
 });
+const { callChatbotAPI } = require("./chatbot");
 
 app.use(cors());
+app.use(express.json()); 
 
 app.get("/", (req, res) => {
   res.send("Hello World");
+});
+
+app.post("/chatbot", async (req, res) => {
+  if (!req.body || !req.body.chat) {
+    return res.status(400).json({ error: "Missing inputs data" });
+  }
+
+  const chat = req.body.chat;
+
+  try {
+    const responseData = await callChatbotAPI(chat);
+    res.json(responseData[0]['generated_text']);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 let users = [];
